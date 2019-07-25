@@ -11,10 +11,16 @@ function take_dump(){
 
 function upload_2_s3(){
     echo "copying $DUMP_FILE to s3..."
+    S3_URL="s3://$BUCKET_NAME/$BUCKET_PATH"
+    STAMP=$(date +%F-%H-%M-%S)
+    CMD="aws s3 cp $DUMP_FILE $S3_URL/${POSTGRES_DB}_${STAMP}.sql"
+    echo $CMD
+    eval ${CMD}
 }
 
 function notify_slack(){
     echo "$@"
+    # TODO: implement this later
     # $SLACKTEE_SH_BIN "@"
 }
 

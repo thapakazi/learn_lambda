@@ -14,4 +14,13 @@ get_slacktee(){
 build_bin(){
     init
     get_slacktee
-} && build_bin
+    #TODO: get pg_dump bin & so file
+    #TODO: get aws cli bins
+}
+
+print_out(){
+    tree bin
+}
+
+build_bin
+print_out

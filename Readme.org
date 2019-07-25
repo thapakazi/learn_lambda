@@ -1,0 +1,21 @@
+
+* Readme
+**** prepare env vars
+     #+begin_src bash
+cat > /tmp/secrets <<EOF                                                                                                         
+POSTGRES_DB=database
+POSTGRES_PASSWORD=password
+POSTGRES_USER=postgres
+POSTGRES_HOST=172.17.0.3
+POSTGRES_PORT=5432
+EOF
+     #+end_src
+
+     #+RESULTS:
+**** run container
+     #+begin_src bash
+docker run --name nameX --rm -it --env-file /tmp/secrets -d postgres:11-alpine
+     #+end_src
+
+     #+RESULTS:
+     : fd4be4c832233bff1d21d065b37a0b0eb687efed8fde45d1111979ed24da80f8

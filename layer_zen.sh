@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 init(){
     mkdir -p bin/
 }
@@ -11,9 +12,18 @@ get_slacktee(){
     chmod +x $SLACKTEE_SH_BIN
 }
 
+get_layers(){
+    get_awscli
+}
+
+get_awscli(){
+    cd gen && bash awscli.sh
+}
+
 build_bin(){
     init
-    get_slacktee
+    #get_slacktee
+    get_layers
     #TODO: get pg_dump bin & so file
     #TODO: get aws cli bins
 }

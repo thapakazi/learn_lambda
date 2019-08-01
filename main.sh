@@ -33,6 +33,6 @@ function handler () {
     ls -lah $DUMP_FILE
     upload_2_s3
     ls -lah $DUMP_FILE
-    notify_slack "dumped and saved to s3"
+    notify_slack "dumped and saved to s3" # not implemented
 }
 

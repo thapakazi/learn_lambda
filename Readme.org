@@ -35,6 +35,17 @@
       1. create a lambda layers
          1. layer for pg_dump
          2. layer for awscli
+      lol, I revised this,we have a Makefile now :) ~make build_layers~
+   3. Deployment
+      - create lambda layers
+       #+CAPTION: layers samples uploaded manually on lamda dashboard
+       #+NAME:   fig:layers
+       [[./demo/layers.png]]
+      - deploy lambda function(main.sh)
+       #+CAPTION: function manually yanked on lamda editor
+       #+NAME:   fig:editor
+       [[./demo/editor.png]]
+      I have a recorded my screen for demo, I will share later.
    
 * Useful Resources:
   - [[https://bezdelev.com/hacking/aws-cli-inside-lambda-layer-aws-s3-sync/][How to use AWS CLI within a Lambda function (aws s3 sync from Lambda)]]
@@ -45,24 +56,15 @@
     - sample db: https://github.com/h8/employees-database
 
 * Meta
-** Learning to run bash on lambda
-   Runtime deps
-**** prepare env vars
-     #+begin_src bash
-cat > /tmp/secrets <<EOF
-POSTGRES_DB=database
-POSTGRES_PASSWORD=password
-POSTGRES_USER=postgres
-POSTGRES_HOST=172.17.0.3
-POSTGRES_PORT=5432
+** I need a pg quick
+   #+begin_src bash
+quick_pg(){
+    cat > /tmp/secrets <<EOF
+POSTGRES_DB=mydb
+POSTGRES_USER=my_user
+POSTGRES_PASSWORD=uGbwtA76uXD2
 EOF
-     #+end_src
+    docker run --rm -it --env-file /tmp/secrets -p5432:5432 postgres:11-alpine
+}
 
-     #+RESULTS:
-**** run container
-     #+begin_src bash
-docker run --name nameX --rm -it --env-file /tmp/secrets -d postgres:11-alpine
-     #+end_src
-
-     #+RESULTS:
-     : fd4be4c832233bff1d21d065b37a0b0eb687efed8fde45d1111979ed24da80f8
+   #+end_src

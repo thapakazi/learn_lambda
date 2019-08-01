@@ -12,7 +12,7 @@ function upload_2_s3(){
     echo "copying $DUMP_FILE to s3..."
     S3_URL="s3://$BUCKET_NAME/$BUCKET_PATH"
     STAMP=$(date +%F-%H-%M-%S)
-    CMD="/opt/aws s3 cp $DUMP_FILE $S3_URL/${POSTGRES_DB}_${STAMP}.sql"
+    CMD="/opt/aws s3 cp --no-progress --storage-class STANDARD_IA $DUMP_FILE $S3_URL/${POSTGRES_DB}_${STAMP}.sql"
     echo $CMD
     eval ${CMD}
 }
@@ -24,12 +24,11 @@ function notify_slack(){
 }
 
 function handler () {
-    EVENT_DATA=$1
-    RESPONSE="{\"statusCode\": 200, \"body\": \"Hello from Lambda!\"}"
-    echo $RESPONSE
+    #EVENT_DATA=$1
+    #RESPONSE="{\"statusCode\": 200, \"body\": \"Hello from Lambda!\"}"
+    #echo $EVENT_DATA
     export `cat .env|xargs`
     init
-
     take_dump
     ls -lah $DUMP_FILE
     upload_2_s3

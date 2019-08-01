@@ -1,8 +1,55 @@
-* Readme
-** Runtime deps
+#+TITLE: learn to run pg_dump & aws s3 cp on lambda
+#+DESCRIPTION: dump pg data and push to s3
+#+DATE: Thursday, Aug 01 2019
+
+
+* Summary
+
+  With this repo, I learned:
+  - layers on lambda, versioning them
+  - how to get custom runtime over lambda working
+  - blend all free stuffs on internet to play along
+  - storage classes on S3, [[https://aws.amazon.com/s3/pricing/?nc=sn&loc=4][pricing]]
+** Arch
+
+   - [ lambda ] 
+     - *layer1*: pg_dump runner (I named bash-runner, don't know why)
+     - *layer2*: awscli
+     - *script*: ~[[./main.sh][main.sh~]] with handler function calling other dependent functions
+     - *env*: [[./.env][~.env]]~ file housing the secrets, I didn't know lambda also provides place to put env vars #reviselater
+
+   - pg_dump <-- [pg@play-with-docker]:5432 via ngrok
+     1. aws s3 cp dump.sql -> s3 bucket
+** Step for reproduction
+   #+begin_quote
+   you have been warned, please try this at home ;)
+   #+end_quote
+   If you wanna do stupid thing like me here are you steps of reproduction:
+   1. Preparation:
+      1. get [[http://bit.ly/geneseacademy][free]] aws account by filling form at end
+      2. get a pg running available public to world ( I am not doing lambda in vpc for now) some how, I will write about it if necessary.
+       I managed to do it with [[http://play-with-docker.com][Play with docker]] + [[https://ngrok.com/download][ngrok]] fusion
+      3. configure things needed for lambda {iam role}, & s3 bucket(create new if necessary, and allow lambda role to write to it).
+       For sake of simplicity, I gave full control for time being. (+lambda full, and s3fullaccess+)
+   2. Execution:
+      1. create a lambda layers
+         1. layer for pg_dump
+         2. layer for awscli
+   
+* Useful Resources:
+  - [[https://bezdelev.com/hacking/aws-cli-inside-lambda-layer-aws-s3-sync/][How to use AWS CLI within a Lambda function (aws s3 sync from Lambda)]]
+  - [[https://www.youtube.com/watch?v=Y9E-jqbd3eI][Getting Started with AWS Lambda and Serverless Computing - AWS Online Tech Talks]]
+  - [[http://bit.ly/geneseacademy][Genese Cloud Academy]] free $75 credit, fill the form at end if you want to play with aws for "free"
+  - [[http://play-with-docker.com][Play with docker]] + [[https://ngrok.com/download][ngrok]] fusion; use [[https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip][Linux (32-bit)]] on alpine
+  - Postgresql
+    - sample db: https://github.com/h8/employees-database
+
+* Meta
+** Learning to run bash on lambda
+   Runtime deps
 **** prepare env vars
      #+begin_src bash
-cat > /tmp/secrets <<EOF                                                                                                         
+cat > /tmp/secrets <<EOF
 POSTGRES_DB=database
 POSTGRES_PASSWORD=password
 POSTGRES_USER=postgres

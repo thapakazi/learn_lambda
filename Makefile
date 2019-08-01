@@ -1,10 +1,16 @@
-build_bin:
-	sh layer_zen.sh
+build_layers: clean_layers layer_pgdump layer_awscli
+	@echo "layers built !!"
 
-clean_bin:
-	rm -rf bin/slacktee
+layer_pgdump:
+	@zip -yr9 exports/layer_pgdump.zip layers/postgres 
 
-build:
+layer_awscli:
+	@bash layers/awscli/generator.sh ${PWD}/exports/layer_awscli.zip
+
+clean_layers:
+	rm -rf exports/*
+
+deploy_function:
 	@rm -rf export
 	@mkdir -p export
 	@zip -ry export/layer.zip bootstrap bin

@@ -1,20 +1,24 @@
 # The script will fail if any of the commands fail
+# credits: https://bezdelev.com/hacking/aws-cli-inside-lambda-layer-aws-s3-sync/
 set -e
 
 # Automatically detects python version (only works for python3.x)
 export PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:3]; print("{0}.{1}".format(*version))'`
 
+# The tmp dir for doing virtual env build
+TMP_BUILD_DIR=/tmp/lambda_build
+
 # Temporary directory for the virtual environment
-export VIRTUAL_ENV_DIR="awscli-virtualenv"
+VIRTUAL_ENV_DIR="${TMP_BUILD_DIR}/awscli-virtualenv"
 
 # Temporary directory for AWS CLI and its dependencies
-export LAMBDA_LAYER_DIR="awscli-lambda-layer"
+LAMBDA_LAYER_DIR="awscli-lambda-layer"
 
 # The zip file that will contain the layer
-export ZIP_FILE_NAME="awscli-lambda-layer.zip"
+ZIP_FILE="${1:-${TMP_BUILD_DIR}/awscli-lambda-layer.zip}"
 
 # Creates a directory for virtual environment
-mkdir ${VIRTUAL_ENV_DIR}
+mkdir -p ${VIRTUAL_ENV_DIR}
 
 # Initializes a virtual environment in the virtual environment directory
 virtualenv ${VIRTUAL_ENV_DIR}
@@ -39,21 +43,20 @@ deactivate
 cd ../..
 
 # Creates a temporary directory to store AWS CLI and its dependencies
-mkdir ${LAMBDA_LAYER_DIR}
+mkdir -p ${LAMBDA_LAYER_DIR}
 
 # Changes the current directory into the temporary directory
 cd ${LAMBDA_LAYER_DIR}
 
 # Copies aws and its dependencies to the temp directory
-cp ../${VIRTUAL_ENV_DIR}/bin/aws .
-cp -r ../${VIRTUAL_ENV_DIR}/lib/python${PYTHON_VERSION}/site-packages/* .
+cp ${VIRTUAL_ENV_DIR}/bin/aws .
+cp -r ${VIRTUAL_ENV_DIR}/lib/python${PYTHON_VERSION}/site-packages/* .
 
 # Zips the contents of the temporary directory
-zip -r ../${ZIP_FILE_NAME} *
+zip -ry9 ${ZIP_FILE} *
 
 # Goes back to where it started
 cd ..
 
 # Removes virtual env and temp directories
-rm -r ${VIRTUAL_ENV_DIR}
-rm -r ${LAMBDA_LAYER_DIR}
+rm -rf ${TMP_BUILD_DIR}
